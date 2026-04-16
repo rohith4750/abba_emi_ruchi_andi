@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-green: #006633;
+  --color-brand-saffron: #FF9933;
+  --color-brand-cream: #FFFDE3;
+  --color-brand-red: #E31E24;
+  --color-brand-gold: #D4AF37;
+  
+  --font-serif: var(--font-poppins), serif;
+  --font-sans: var(--font-poppins), sans-serif;
+}
+
+:root {
+  --background: var(--color-brand-cream);
+  --foreground: #1a1a1a;
+  
+  --brand-green: 0, 102, 51;
+  --brand-saffron: 255, 153, 51;
+  --brand-cream: 255, 253, 227;
+  --brand-red: 227, 30, 36;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  color: var(--color-brand-green);
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
