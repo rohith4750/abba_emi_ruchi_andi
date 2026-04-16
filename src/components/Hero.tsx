@@ -67,19 +67,16 @@ export default function Hero() {
                 <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-saffron/20 rounded-full blur-3xl group-hover:bg-brand-saffron/40 transition-all duration-500"></div>
                 <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-brand-green/10 rounded-full blur-3xl group-hover:bg-brand-green/30 transition-all duration-500"></div>
                 
-                {/* Logo Placeholder / Image */}
-                <div className="relative overflow-hidden rounded-full border-8 border-brand-gold/30 shadow-2xl p-4 bg-white/80 backdrop-blur-sm transition-transform duration-500 hover:rotate-2">
+                {/* Logo Image */}
+                <div className="relative overflow-hidden rounded-full border-8 border-brand-gold/30 shadow-2xl transition-transform duration-500 hover:rotate-2">
                    <div className="w-full h-full rounded-full overflow-hidden relative aspect-square">
-                     {/* Using a placeholder for now as instructed */}
-                      <div className="absolute inset-0 flex items-center justify-center bg-brand-cream text-brand-green text-center p-8">
-                        <div>
-                          <p className="font-serif text-2xl font-bold mb-2">ABBA EMI RUCHI ANDI</p>
-                          <p className="text-sm tracking-[0.2em] font-sans">REGIONAL DELICACIES</p>
-                          <div className="mt-4 border-t border-brand-green/20 pt-4 text-xs font-semibold">
-                            ANDHRA • SEEMA • TELANGANA
-                          </div>
-                        </div>
-                      </div>
+                      <Image 
+                        src="/logo.png" 
+                        alt="Hero Logo" 
+                        fill 
+                        className="object-cover scale-110"
+                        priority
+                      />
                    </div>
                 </div>
               </div>

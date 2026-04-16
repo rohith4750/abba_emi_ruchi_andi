@@ -1,8 +1,11 @@
 "use client"
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+import { getPendingOrderCount } from "@/actions/orders";
 import { 
   LayoutDashboard, 
   Package, 
@@ -23,11 +26,15 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [pendingOrders, setPendingOrders] = useState(0);
+  useEffect(() => {
+    getPendingOrderCount().then(setPendingOrders);
+  }, [pathname]);
 
   const menuItems = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Products", href: "/admin/products", icon: Package },
-    { name: "Orders", href: "/admin/orders", icon: ShoppingCart },
+    { name: "Orders", href: "/admin/orders", icon: ShoppingCart, badge: pendingOrders },
     { name: "Categories", href: "/admin/categories", icon: Tags },
     { name: "Customers", href: "/admin/customers", icon: Users },
   ];
@@ -43,9 +50,28 @@ export default function AdminLayout({
       >
         <div className="flex h-full flex-col">
           {/* Sidebar Header */}
-          <div className="flex h-16 items-center justify-between px-4">
-            {isSidebarOpen && (
-              <span className="text-xl font-bold whitespace-nowrap">Art Food Admin</span>
+          <div className="flex h-20 items-center justify-between px-4 border-b border-white/10">
+            {isSidebarOpen ? (
+              <div className="flex items-center gap-3">
+                <div className="h-12 w-12 rounded-full overflow-hidden shrink-0 relative bg-white">
+                  <Image 
+                    src="/logo.png" 
+                    alt="Logo" 
+                    fill
+                    className="object-cover scale-125"
+                  />
+                </div>
+                <span className="text-sm font-bold leading-tight">Abba Emi<br/>Ruchi Andi</span>
+              </div>
+            ) : (
+              <div className="h-10 w-10 rounded-full overflow-hidden shrink-0 mx-auto relative bg-white">
+                 <Image 
+                  src="/logo.png" 
+                  alt="Logo" 
+                  fill
+                  className="object-cover scale-125"
+                />
+              </div>
             )}
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -73,10 +99,22 @@ export default function AdminLayout({
                   )}
                 >
                   <Icon className={cn("h-5 w-5 shrink-0", !isSidebarOpen && "mx-auto")} />
-                  {isSidebarOpen && <span>{item.name}</span>}
+                  {isSidebarOpen && (
+                    <div className="flex-1 flex items-center justify-between">
+                      <span>{item.name}</span>
+                      {item.badge && item.badge > 0 && (
+                        <span className="bg-brand-red text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                          {item.badge}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  {!isSidebarOpen && item.badge && item.badge > 0 && (
+                    <div className="absolute top-1 right-1 h-3 w-3 bg-brand-red rounded-full border-2 border-brand-green" />
+                  )}
                   {!isSidebarOpen && (
                     <div className="absolute left-16 z-50 rounded-md bg-brand-green px-2 py-1 text-xs text-white opacity-0 shadow-xl group-hover:opacity-100 transition-opacity">
-                      {item.name}
+                      {item.name} {item.badge && item.badge > 0 && `(${item.badge})`}
                     </div>
                   )}
                 </Link>

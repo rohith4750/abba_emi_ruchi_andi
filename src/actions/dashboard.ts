@@ -10,9 +10,7 @@ export async function getDashboardStats() {
         where: { status: { not: 'CANCELLED' } }
       }),
       db.order.count(),
-      db.order.groupBy({
-        by: ['customerName'],
-      }).then((groups: any[]) => groups.length),
+      db.customer.count(),
       db.product.count({
         where: { stock: { lte: 5 } }
       })

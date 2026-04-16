@@ -2,25 +2,36 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ShoppingCart, Menu, X, Phone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
+import { getCategories } from "@/actions/categories";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [categories, setCategories] = useState<{name: string, slug: string}[]>([]);
+  const pathname = usePathname();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    getCategories().then((data) => {
+      setCategories(data.map(c => ({ name: c.name, slug: c.slug })));
+    });
+  }, [pathname]);
+
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "Pickles", href: "/category/pickles" },
-    { name: "Podis", href: "/category/podis" },
+    ...categories.map(cat => ({
+      name: cat.name,
+      href: `/category/${cat.slug}`
+    })),
     { name: "Our Story", href: "/our-story" },
   ];
 
@@ -33,10 +44,20 @@ export default function Navbar() {
       }`}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
-        {/* Logo Text/Logo */}
-        <Link href="/" className="flex flex-col">
-          <span className="text-2xl font-bold text-brand-green leading-none">ABBA EMI</span>
-          <span className="text-sm font-sans text-brand-saffron tracking-[0.2em] font-semibold">RUCHI ANDI</span>
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2">
+          <div className="w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden relative">
+            <Image 
+              src="/logo.png" 
+              alt="Abba Emi Ruchi Andi Logo" 
+              fill
+              className="object-cover scale-125"
+            />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-xl font-bold text-brand-green leading-none hidden sm:block">ABBA EMI</span>
+            <span className="text-[10px] font-sans text-brand-saffron tracking-[0.2em] font-semibold hidden sm:block">RUCHI ANDI</span>
+          </div>
         </Link>
 
         {/* Desktop Links */}

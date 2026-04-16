@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { Lock, Mail, Loader2, AlertCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -49,11 +49,16 @@ export default function AdminLoginPage() {
       <div className="max-w-md w-full">
         {/* Logo/Brand */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-brand-green/10 border-4 border-brand-green/20 mb-4">
-             <span className="text-2xl font-bold font-serif text-brand-green">A</span>
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full overflow-hidden shadow-xl mb-4 border-2 border-brand-green/10 relative bg-brand-cream">
+             <Image 
+              src="/logo.png" 
+              alt="Logo" 
+              fill
+              className="object-cover scale-125"
+             />
           </div>
-          <h1 className="text-3xl font-bold font-serif text-brand-green">Art Food Admin</h1>
-          <p className="text-gray-500 mt-2">Sign in to manage your pickles and podis</p>
+          <h1 className="text-3xl font-bold text-brand-green">Abba Emi Ruchi Andi</h1>
+          <p className="text-gray-500 mt-2">Sign in to manage your Art Food Zone</p>
         </div>
 
         {/* Login Card */}

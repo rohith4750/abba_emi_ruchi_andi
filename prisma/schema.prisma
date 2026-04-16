@@ -64,8 +64,25 @@ model Order {
   total         Decimal     @db.Decimal(10, 2)
   status        OrderStatus @default(PENDING)
   items         OrderItem[]
+  customerId    String?
+  customer      Customer?   @relation(fields: [customerId], references: [id])
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+
+  @@index([customerId])
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?  @unique
+  phone     String   @unique
+  address   String?
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([phone])
 }
 
 model OrderItem {

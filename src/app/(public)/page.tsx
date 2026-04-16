@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import { cn } from "@/lib/utils";
@@ -50,11 +51,11 @@ export default async function Home() {
         <div className="flex whitespace-nowrap animate-marquee">
           {[...Array(10)].map((_, i) => (
             <div key={i} className="flex items-center gap-4 mx-8">
-               <span className="text-xl font-bold italic font-serif">100% Homemade</span>
+               <span className="text-xl font-bold italic">100% Homemade</span>
                <span className="w-2 h-2 rounded-full bg-brand-saffron"></span>
-               <span className="text-xl font-bold italic font-serif">No Preservatives</span>
+               <span className="text-xl font-bold italic">No Preservatives</span>
                <span className="w-2 h-2 rounded-full bg-brand-saffron"></span>
-               <span className="text-xl font-bold italic font-serif">Original Telugu Recipes</span>
+               <span className="text-xl font-bold italic">Original Telugu Recipes</span>
                <span className="w-2 h-2 rounded-full bg-brand-saffron"></span>
             </div>
           ))}
@@ -64,8 +65,16 @@ export default async function Home() {
       {/* Footer (Simple) */}
       <footer className="bg-gray-50 py-16 border-t border-gray-100">
         <div className="container mx-auto px-4 text-center">
-           <div className="mb-8">
-             <span className="text-3xl font-bold text-brand-green">ABBA EMI RUCHI ANDI</span>
+           <div className="flex flex-col items-center mb-8">
+             <div className="w-20 h-20 rounded-full overflow-hidden relative mb-4">
+               <Image 
+                src="/logo.png" 
+                alt="Logo" 
+                fill
+                className="object-cover scale-125"
+               />
+             </div>
+             <span className="text-2xl font-bold text-brand-green uppercase tracking-wider">ABBA EMI RUCHI ANDI</span>
              <p className="text-gray-500 mt-2 italic">Amma chethi ruchi… mee intiki</p>
            </div>
            <div className="flex justify-center gap-8 mb-8 text-gray-600 font-semibold">
