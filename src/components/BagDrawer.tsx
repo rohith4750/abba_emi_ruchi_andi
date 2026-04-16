@@ -56,7 +56,7 @@ Please confirm my order and let me know the payment details.`
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-screen w-full max-w-md bg-white z-[101] shadow-2xl flex flex-col"
+            className="fixed right-0 top-0 h-screen w-full sm:max-w-md bg-white z-[101] shadow-2xl flex flex-col"
           >
             {/* Header */}
             <div className="p-6 border-b flex items-center justify-between bg-brand-cream/10">

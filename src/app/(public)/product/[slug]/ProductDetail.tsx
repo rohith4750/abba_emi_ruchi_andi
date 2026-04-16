@@ -117,22 +117,22 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               )}
             </div>
 
-            <div className="space-y-4 mt-auto">
+            <div className="space-y-4 mt-8 lg:mt-auto">
               <button 
                 onClick={handleAddToBag}
-                className="w-full bg-brand-green text-white py-5 rounded-2xl font-bold text-xl flex items-center justify-center gap-3 hover:brightness-110 transition-all shadow-2xl shadow-green-100 group"
+                className="w-full bg-brand-green text-white py-4 lg:py-5 rounded-2xl font-bold text-lg lg:text-xl flex items-center justify-center gap-3 hover:brightness-110 transition-all shadow-2xl shadow-green-100 group"
               >
                 <ShoppingBag className="h-6 w-6 group-hover:rotate-12 transition-transform" /> Add to Shopping Bag
               </button>
               
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                  <ShieldCheck className="h-5 w-5 text-brand-green" />
-                  <span className="text-xs font-bold text-gray-700 uppercase">Chemical Free</span>
+              <div className="grid grid-cols-2 gap-3 lg:gap-4">
+                <div className="flex items-center gap-2 lg:gap-3 p-3 lg:p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                  <ShieldCheck className="h-4 w-4 lg:h-5 lg:w-5 text-brand-green" />
+                  <span className="text-[10px] lg:text-xs font-bold text-gray-700 uppercase">Chemical Free</span>
                 </div>
-                <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                  <Truck className="h-5 w-5 text-brand-green" />
-                  <span className="text-xs font-bold text-gray-700 uppercase">Fast Delivery</span>
+                <div className="flex items-center gap-2 lg:gap-3 p-3 lg:p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                  <Truck className="h-4 w-4 lg:h-5 lg:w-5 text-brand-green" />
+                  <span className="text-[10px] lg:text-xs font-bold text-gray-700 uppercase">Fast Delivery</span>
                 </div>
               </div>
             </div>

@@ -57,39 +57,39 @@ export default function ProductCard({ product }: ProductCardProps) {
                Image Coming Soon
             </div>
           )}
-          {/* Add to Bag Overly (Mobile maybe?) */}
-          <div className="absolute inset-x-0 bottom-0 scale-y-0 group-hover:scale-y-100 origin-bottom transition-transform duration-300 p-4 bg-gradient-to-t from-black/20 to-transparent">
+          {/* Add to Bag Overly (Mobile Optimized) */}
+          <div className="absolute inset-x-0 bottom-0 p-2 sm:p-4 bg-gradient-to-t from-black/20 to-transparent">
              <button 
                 onClick={handleAddToBag}
-                className="w-full bg-brand-green text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg hover:brightness-110 transition-all"
+                className="w-full bg-brand-green text-white py-2 sm:py-3 rounded-xl font-bold flex items-center justify-center gap-1 sm:gap-2 shadow-lg hover:brightness-110 transition-all text-[10px] sm:text-sm"
              >
-                <ShoppingBag className="h-4 w-4" /> Add to Bag
+                <ShoppingBag className="h-3 w-3 sm:h-4 sm:w-4" /> Add
              </button>
           </div>
         </div>
       </Link>
 
       {/* Info */}
-      <div className="p-6">
+      <div className="p-3 sm:p-6">
         <Link href={`/category/${product.category?.slug.toLowerCase().replace(/\s+/g, '-')}`}>
-          <span className="text-[10px] uppercase font-bold text-brand-saffron tracking-widest hover:text-brand-green transition-colors">
+          <span className="text-[8px] sm:text-[10px] uppercase font-bold text-brand-saffron tracking-widest hover:text-brand-green transition-colors">
             {product.category?.name || "Pickles"}
           </span>
         </Link>
         <Link href={`/product/${product.slug.toLowerCase().replace(/\s+/g, '-')}`}>
-          <h3 className="text-lg font-bold text-gray-900 mt-1 line-clamp-1 group-hover:text-brand-green transition-colors">
+          <h3 className="text-xs sm:text-lg font-bold text-gray-900 mt-0.5 sm:mt-1 line-clamp-1 group-hover:text-brand-green transition-colors">
             {product.name}
           </h3>
         </Link>
-        <p className="text-gray-500 text-xs mt-2 line-clamp-2 leading-relaxed h-8">
+        <p className="hidden sm:block text-gray-500 text-xs mt-2 line-clamp-2 leading-relaxed h-8">
           {product.description}
         </p>
         
-        <div className="mt-4 flex items-center justify-between">
-          <span className="text-xl font-bold text-brand-green">
+        <div className="mt-2 sm:mt-4 flex items-center justify-between">
+          <span className="text-sm sm:text-xl font-bold text-brand-green">
             ₹{product.price.toString()}
           </span>
-          <div className="flex items-center gap-1">
+          <div className="hidden sm:flex items-center gap-1">
              <div className="h-1 w-1 rounded-full bg-brand-green" />
              <span className="text-[10px] font-bold text-gray-400 uppercase">Available</span>
           </div>

@@ -108,35 +108,68 @@ export default function Navbar() {
             </Link>
             
             <button 
-              className="lg:hidden p-2 text-brand-green"
+              className="lg:hidden p-2 text-brand-green hover:bg-brand-green/5 rounded-full transition-colors z-[110] relative"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? <X /> : <Menu />}
+              {mobileMenuOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Premium Mobile Menu Overlay */}
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden bg-white border-t border-gray-100 overflow-hidden"
+              initial={{ opacity: 0, x: "100%" }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed inset-0 z-[100] bg-white flex flex-col pt-32 pb-12 px-8 lg:hidden h-screen"
             >
-              <div className="container mx-auto px-4 py-6 flex flex-col gap-4">
-                {navLinks.map((link) => (
-                  <Link 
-                    key={link.name} 
-                    href={link.href}
-                    className="text-lg font-bold text-gray-700 uppercase"
-                    onClick={() => setMobileMenuOpen(false)}
+              <div className="absolute top-0 right-0 p-32 opacity-[0.03] pointer-events-none">
+                <Image src="/logo.png" alt="" width={400} height={400} />
+              </div>
+
+              <div className="flex flex-col gap-8 flex-1">
+                {navLinks.map((link, i) => (
+                  <motion.div
+                    key={link.name}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 + 0.2 }}
                   >
-                    {link.name}
-                  </Link>
+                    <Link 
+                      href={link.href}
+                      className={`text-4xl font-extrabold uppercase tracking-widest ${
+                        pathname === link.href ? "text-brand-green" : "text-gray-900"
+                      }`}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {link.name}
+                    </Link>
+                  </motion.div>
                 ))}
               </div>
+
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="pt-12 border-t space-y-8"
+              >
+                <div className="flex flex-col gap-2">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Connect with Amma</span>
+                  <div className="flex gap-6 text-brand-green font-bold">
+                    <a href="#" className="text-xl">Instagram</a>
+                    <a href="#" className="text-xl">WhatsApp</a>
+                  </div>
+                </div>
+                
+                <p className="text-xs text-gray-400 font-medium">
+                  © 2026 Abba Emi Ruchi Andi <br />
+                  <span className="italic">Amma chethi ruchi… mee intiki</span>
+                </p>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
