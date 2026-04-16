@@ -47,15 +47,19 @@ export default async function Home() {
                   fill
                   className="object-cover transition-transform duration-1000 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity group-hover:opacity-90"></div>
+                {/* Premium Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity group-hover:opacity-100"></div>
                 
-                <div className="relative z-10 text-white text-left translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                   <h3 className="text-3xl font-bold mb-3">{category.name}</h3>
-                   <p className="text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 mb-6 font-medium line-clamp-2">
+                <div className="relative z-10 translate-y-3 group-hover:translate-y-0 transition-all duration-500 w-full">
+                   <div className="w-12 h-1 bg-brand-saffron mb-4 rounded-full transition-all duration-500 group-hover:w-20"></div>
+                   <h3 className="text-3xl md:text-4xl font-extrabold mb-3 text-white drop-shadow-lg">
+                     {category.name}
+                   </h3>
+                   <p className="text-sm text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-500 mb-6 font-medium line-clamp-2 max-w-[280px]">
                      {category.description}
                    </p>
-                   <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] border-b-2 border-white/30 pb-1 group-hover:border-white transition-colors">
-                     Shop Collection <ArrowRight className="h-4 w-4" />
+                   <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-white border-b-2 border-white/30 pb-1 group-hover:border-brand-saffron transition-colors">
+                     Explore Collection <ArrowRight className="h-4 w-4" />
                    </div>
                 </div>
               </Link>
