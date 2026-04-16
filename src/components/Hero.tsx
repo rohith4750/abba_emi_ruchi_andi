@@ -39,7 +39,7 @@ export default function Hero() {
               
               <div className="flex flex-wrap gap-4">
                 <Link
-                  href="/menu"
+                  href="/shop"
                   className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all bg-brand-green rounded-xl hover:bg-brand-green/90 hover:scale-105 active:scale-95 shadow-xl shadow-brand-green/20"
                 >
                   Explore Menu

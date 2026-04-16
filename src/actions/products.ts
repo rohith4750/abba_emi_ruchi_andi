@@ -15,6 +15,36 @@ export async function getProductById(id: string) {
   }
 }
 
+export async function getProductsByCategorySlug(slug: string) {
+  try {
+    const category = await db.category.findUnique({
+      where: { slug },
+      include: {
+        products: {
+          include: { category: true }
+        }
+      }
+    });
+
+    return category ? category.products : [];
+  } catch (error) {
+    console.error("Error fetching products by category slug:", error);
+    return [];
+  }
+}
+
+export async function getProductBySlug(slug: string) {
+  try {
+    return await db.product.findUnique({
+      where: { slug },
+      include: { category: true }
+    });
+  } catch (error) {
+    console.error("Error fetching product by slug:", error);
+    return null;
+  }
+}
+
 export async function getProducts() {
   try {
     return await db.product.findMany({

@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   description: "Homemade, authentic Telugu flavors delivered to your doorstep. Amma's touch in every jar.",
 };
 
+import Link from "next/link";
+import Image from "next/image";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -21,8 +24,28 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.variable} antialiased`}>
-        <div className="min-h-screen bg-brand-cream/30">
+      <body className={`${poppins.variable} antialiased selection:bg-brand-saffron/30`}>
+        {/* Background Fade Logo */}
+        <div className="fixed inset-0 pointer-events-none -z-1 overflow-hidden opacity-[0.03]">
+          <div className="absolute top-[10%] -left-[5%] w-[600px] h-[600px] rotate-[-15deg]">
+            <Image 
+              src="/logo.png" 
+              alt="" 
+              fill 
+              className="object-contain"
+            />
+          </div>
+          <div className="absolute bottom-[10%] -right-[5%] w-[800px] h-[800px] rotate-[15deg]">
+            <Image 
+              src="/logo.png" 
+              alt="" 
+              fill 
+              className="object-contain"
+            />
+          </div>
+        </div>
+
+        <div className="relative min-h-screen">
           {children}
         </div>
         <ToastProvider />
