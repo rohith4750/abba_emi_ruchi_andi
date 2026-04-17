@@ -71,3 +71,73 @@ export async function getRecentOrders(limit: number = 5) {
     return { orders: [], error: error.message || "Failed to fetch orders" };
   }
 }
+
+export async function getAnalyticsData() {
+  try {
+    // 1. Revenue trend (Last 7 days)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const orders = await db.order.findMany({
+      where: {
+        createdAt: { gte: sevenDaysAgo },
+        status: { not: 'CANCELLED' }
+      },
+      select: {
+        createdAt: true,
+        total: true,
+      }
+    });
+
+    const dailyRevenue: Record<string, number> = {};
+    for (let i = 0; i < 7; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      dailyRevenue[d.toLocaleDateString('en-US', { weekday: 'short' })] = 0;
+    }
+
+    orders.forEach(order => {
+      const day = new Date(order.createdAt).toLocaleDateString('en-US', { weekday: 'short' });
+      if (dailyRevenue[day] !== undefined) {
+        dailyRevenue[day] += Number(order.total);
+      }
+    });
+
+    const revenueSeries = Object.entries(dailyRevenue).reverse().map(([name, value]) => ({ name, value }));
+
+    // 2. Category Performance
+    const categoryStats = await db.category.findMany({
+      include: {
+        _count: {
+          select: { products: true }
+        },
+        products: {
+          select: {
+            orderItems: {
+              select: {
+                quantity: true,
+                price: true,
+              }
+            }
+          }
+        }
+      }
+    });
+
+    const categoryPerformance = categoryStats.map(cat => {
+      const revenue = cat.products.reduce((acc, prod) => {
+        return acc + prod.orderItems.reduce((pAcc, item) => pAcc + (item.quantity * Number(item.price)), 0);
+      }, 0);
+      return { name: cat.name, value: revenue };
+    }).filter(c => c.value > 0);
+
+    return { 
+      revenueSeries, 
+      categoryPerformance: categoryPerformance.length > 0 ? categoryPerformance : [{ name: 'No Data', value: 0 }], 
+      error: null 
+    };
+  } catch (error: any) {
+    console.error("Error fetching analytics data:", error);
+    return { revenueSeries: [], categoryPerformance: [], error: error.message };
+  }
+}
