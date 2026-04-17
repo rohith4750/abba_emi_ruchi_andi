@@ -63,8 +63,8 @@ export async function deleteCategory(id: string) {
     revalidatePath("/admin");
     revalidatePath("/");
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting category:", error);
-    return { success: false, error: "Failed to delete category" };
+    return { success: false, error: error.message || "Failed to delete category" };
   }
 }
