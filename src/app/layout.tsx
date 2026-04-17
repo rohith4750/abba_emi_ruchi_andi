@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.variable} antialiased selection:bg-brand-saffron/30`}>
+      <body className={`${poppins.className} antialiased selection:bg-brand-saffron/30`}>
         {/* Background Fade Logo */}
         <div className="fixed inset-0 pointer-events-none -z-1 overflow-hidden opacity-[0.03]">
           <div className="absolute top-[10%] -left-[5%] w-[600px] h-[600px] rotate-[-15deg]">
