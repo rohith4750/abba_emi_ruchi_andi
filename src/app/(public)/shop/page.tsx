@@ -2,7 +2,7 @@ import { getProducts } from "@/actions/products"
 import ProductCard from "@/components/ProductCard"
 
 export default async function ShopPage() {
-  const products = await getProducts()
+  const { products, error } = await getProducts()
   
   // Serialize for client components
   const serializedProducts = JSON.parse(JSON.stringify(products))

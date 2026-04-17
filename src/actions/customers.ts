@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 
 export async function getCustomers() {
   try {
-    return await db.customer.findMany({
+    const customers = await db.customer.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
         _count: {
@@ -13,15 +13,16 @@ export async function getCustomers() {
         }
       }
     });
-  } catch (error) {
+    return { customers, error: null };
+  } catch (error: any) {
     console.error("Error fetching customers:", error);
-    return [];
+    return { customers: [], error: error.message || "Failed to fetch customers" };
   }
 }
 
 export async function getCustomerById(id: string) {
   try {
-    return await db.customer.findUnique({
+    const customer = await db.customer.findUnique({
       where: { id },
       include: {
         orders: {
@@ -36,9 +37,10 @@ export async function getCustomerById(id: string) {
         }
       }
     });
-  } catch (error) {
+    return { customer, error: null };
+  } catch (error: any) {
     console.error("Error fetching customer by ID:", error);
-    return null;
+    return { customer: null, error: error.message || "Failed to fetch customer" };
   }
 }
 
@@ -64,10 +66,12 @@ export async function upsertCustomer(data: {
       },
     });
     revalidatePath("/admin/customers");
+    revalidatePath(`/admin/customers/${customer.id}`);
+    revalidatePath("/admin");
     return { success: true, customer };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error upserting customer:", error);
-    return { success: false, error: "Failed to save customer details" };
+    return { success: false, error: error.message || "Failed to save customer details" };
   }
 }
 
@@ -77,9 +81,10 @@ export async function deleteCustomer(id: string) {
       where: { id },
     });
     revalidatePath("/admin/customers");
+    revalidatePath("/admin");
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting customer:", error);
-    return { success: false, error: "Failed to delete customer" };
+    return { success: false, error: error.message || "Failed to delete customer" };
   }
 }

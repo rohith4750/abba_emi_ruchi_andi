@@ -31,12 +31,13 @@ export async function createCategory(data: { name: string; slug: string; descrip
     const category = await db.category.create({
       data,
     });
+    revalidatePath("/admin/categories");
     revalidatePath("/admin");
     revalidatePath("/");
     return { success: true, category };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating category:", error);
-    return { success: false, error: "Failed to create category" };
+    return { success: false, error: error.message || "Failed to create category" };
   }
 }
 
@@ -46,12 +47,13 @@ export async function updateCategory(id: string, data: { name?: string; slug?: s
       where: { id },
       data,
     });
+    revalidatePath("/admin/categories");
     revalidatePath("/admin");
     revalidatePath("/");
     return { success: true, category };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating category:", error);
-    return { success: false, error: "Failed to update category" };
+    return { success: false, error: error.message || "Failed to update category" };
   }
 }
 

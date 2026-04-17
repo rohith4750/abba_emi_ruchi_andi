@@ -10,9 +10,9 @@ interface ProductPageProps {
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params
-  const product = await getProductBySlug(slug)
+  const { product, error } = await getProductBySlug(slug)
 
-  if (!product) {
+  if (!product || error) {
     notFound()
   }
 

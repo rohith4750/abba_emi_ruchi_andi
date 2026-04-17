@@ -28,7 +28,7 @@ export default function AdminLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [pendingOrders, setPendingOrders] = useState(0);
   useEffect(() => {
-    getPendingOrderCount().then(setPendingOrders);
+    getPendingOrderCount().then(({ count }) => setPendingOrders(count));
   }, [pathname]);
 
   const menuItems = [

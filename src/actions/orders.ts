@@ -6,7 +6,7 @@ import { OrderStatus } from "@prisma/client";
 
 export async function getOrders() {
   try {
-    return await db.order.findMany({
+    const orders = await db.order.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
         items: {
@@ -16,9 +16,10 @@ export async function getOrders() {
         }
       }
     });
-  } catch (error) {
+    return { orders, error: null };
+  } catch (error: any) {
     console.error("Error fetching orders:", error);
-    return [];
+    return { orders: [], error: error.message || "Failed to fetch orders" };
   }
 }
 
@@ -31,9 +32,9 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
     revalidatePath("/admin");
     revalidatePath("/admin/orders");
     return { success: true, order };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating order status:", error);
-    return { success: false, error: "Failed to update status" };
+    return { success: false, error: error.message || "Failed to update status" };
   }
 }
 
@@ -45,9 +46,9 @@ export async function deleteOrder(orderId: string) {
     revalidatePath("/admin");
     revalidatePath("/admin/orders");
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting order:", error);
-    return { success: false, error: "Failed to delete order" };
+    return { success: false, error: error.message || "Failed to delete order" };
   }
 }
 
@@ -98,21 +99,23 @@ export async function createOrder(data: {
     revalidatePath("/admin");
     revalidatePath("/admin/orders");
     revalidatePath("/admin/customers");
+    revalidatePath("/");
     
     return { success: true, order: result };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating order:", error);
-    return { success: false, error: "Failed to process order" };
+    return { success: false, error: error.message || "Failed to process order" };
   }
 }
 
 export async function getPendingOrderCount() {
   try {
-    return await db.order.count({
+    const count = await db.order.count({
       where: { status: 'PENDING' }
     });
-  } catch (error) {
+    return { count, error: null };
+  } catch (error: any) {
     console.error("Error fetching pending order count:", error);
-    return 0;
+    return { count: 0, error: error.message || "Failed to fetch order count" };
   }
 }

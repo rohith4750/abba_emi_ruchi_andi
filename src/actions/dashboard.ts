@@ -5,19 +5,23 @@ import db from "../lib/db";
 export async function getDashboardStats() {
   // Failsafe: Normalize slugs in the background to ensure public links work
   const fixSlugs = async () => {
-    const cats = await db.category.findMany();
-    for (const cat of cats) {
-      const normalized = cat.slug.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
-      if (normalized !== cat.slug) {
-        await db.category.update({ where: { id: cat.id }, data: { slug: normalized } });
+    try {
+      const cats = await db.category.findMany();
+      for (const cat of cats) {
+        const normalized = cat.slug.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+        if (normalized !== cat.slug) {
+          await db.category.update({ where: { id: cat.id }, data: { slug: normalized } });
+        }
       }
-    }
-    const prods = await db.product.findMany();
-    for (const prod of prods) {
-      const normalized = prod.slug.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
-      if (normalized !== prod.slug) {
-        await db.product.update({ where: { id: prod.id }, data: { slug: normalized } });
+      const prods = await db.product.findMany();
+      for (const prod of prods) {
+        const normalized = prod.slug.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+        if (normalized !== prod.slug) {
+          await db.product.update({ where: { id: prod.id }, data: { slug: normalized } });
+        }
       }
+    } catch (e) {
+      console.error("Slug fix failed:", e);
     }
   };
   fixSlugs();
@@ -35,21 +39,22 @@ export async function getDashboardStats() {
       })
     ]);
 
-    return [
+    const stats = [
       { name: "Total Revenue", value: `₹${totalRevenue._sum.total?.toString() || '0'}`, trend: "+0%", positive: true },
       { name: "Active Orders", value: totalOrders.toString(), trend: "+0", positive: true },
       { name: "Total Customers", value: totalCustomers.toString(), trend: "+0%", positive: true },
       { name: "Low Stock Items", value: lowStockItems.toString(), trend: "0", positive: false },
     ];
-  } catch (error) {
+    return { stats, error: null };
+  } catch (error: any) {
     console.error("Error fetching dashboard stats:", error);
-    return [];
+    return { stats: [], error: error.message || "Failed to fetch stats" };
   }
 }
 
 export async function getRecentOrders(limit: number = 5) {
   try {
-    return await db.order.findMany({
+    const orders = await db.order.findMany({
       take: limit,
       orderBy: { createdAt: 'desc' },
       include: {
@@ -60,8 +65,9 @@ export async function getRecentOrders(limit: number = 5) {
         }
       }
     });
-  } catch (error) {
+    return { orders, error: null };
+  } catch (error: any) {
     console.error("Error fetching recent orders:", error);
-    return [];
+    return { orders: [], error: error.message || "Failed to fetch orders" };
   }
 }

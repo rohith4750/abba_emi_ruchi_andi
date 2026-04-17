@@ -5,13 +5,14 @@ import { revalidatePath } from "next/cache";
 
 export async function getProductById(id: string) {
   try {
-    return await db.product.findUnique({
+    const product = await db.product.findUnique({
       where: { id },
       include: { category: true },
     });
-  } catch (error) {
+    return { product, error: null };
+  } catch (error: any) {
     console.error("Error fetching product by ID:", error);
-    return null;
+    return { product: null, error: error.message || "Failed to fetch product" };
   }
 }
 
@@ -26,47 +27,50 @@ export async function getProductsByCategorySlug(slug: string) {
       }
     });
 
-    return category ? category.products : [];
-  } catch (error) {
+    return { products: category ? category.products : [], error: null };
+  } catch (error: any) {
     console.error("Error fetching products by category slug:", error);
-    return [];
+    return { products: [], error: error.message || "Failed to fetch products" };
   }
 }
 
 export async function getProductBySlug(slug: string) {
   try {
-    return await db.product.findUnique({
+    const product = await db.product.findUnique({
       where: { slug },
       include: { category: true }
     });
-  } catch (error) {
+    return { product, error: null };
+  } catch (error: any) {
     console.error("Error fetching product by slug:", error);
-    return null;
+    return { product: null, error: error.message || "Failed to fetch product" };
   }
 }
 
 export async function getProducts() {
   try {
-    return await db.product.findMany({
+    const products = await db.product.findMany({
       include: { category: true },
       orderBy: { createdAt: 'desc' },
     });
-  } catch (error) {
+    return { products, error: null };
+  } catch (error: any) {
     console.error("Error fetching products:", error);
-    return [];
+    return { products: [], error: error.message || "Failed to fetch products" };
   }
 }
 
 export async function getFeaturedProducts(limit = 6) {
   try {
-    return await db.product.findMany({
+    const products = await db.product.findMany({
       take: limit,
       include: { category: true },
       orderBy: { createdAt: 'desc' },
     });
-  } catch (error) {
+    return { products, error: null };
+  } catch (error: any) {
     console.error("Error fetching featured products:", error);
-    return [];
+    return { products: [], error: error.message || "Failed to fetch products" };
   }
 }
 
@@ -75,12 +79,14 @@ export async function createProduct(data: any) {
     const product = await db.product.create({
       data,
     });
+    revalidatePath("/admin/products");
     revalidatePath("/admin");
     revalidatePath("/");
+    revalidatePath(`/category/${product.categoryId}`); 
     return { success: true, product };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating product:", error);
-    return { success: false, error: "Failed to create product" };
+    return { success: false, error: error.message || "Failed to create product" };
   }
 }
 
@@ -90,25 +96,28 @@ export async function updateProduct(id: string, data: any) {
       where: { id },
       data,
     });
+    revalidatePath("/admin/products");
     revalidatePath("/admin");
     revalidatePath("/");
+    revalidatePath(`/product/${product.slug}`);
     return { success: true, product };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating product:", error);
-    return { success: false, error: "Failed to update product" };
+    return { success: false, error: error.message || "Failed to update product" };
   }
 }
 
 export async function deleteProduct(id: string) {
   try {
-    await db.product.delete({
+    const product = await db.product.delete({
       where: { id },
     });
+    revalidatePath("/admin/products");
     revalidatePath("/admin");
     revalidatePath("/");
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting product:", error);
-    return { success: false, error: "Failed to delete product" };
+    return { success: false, error: error.message || "Failed to delete product" };
   }
 }
