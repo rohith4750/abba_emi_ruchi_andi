@@ -9,29 +9,33 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
   providers: [
     Credentials({
       async authorize(credentials) {
-        const parsedCredentials = z
-          .object({ email: z.string().email(), password: z.string().min(6) })
-          .safeParse(credentials);
+        try {
+          const parsedCredentials = z
+            .object({ email: z.string().email(), password: z.string().min(6) })
+            .safeParse(credentials);
 
-        if (parsedCredentials.success) {
-          const { email, password } = parsedCredentials.data;
-          
-          const user = await db.user.findUnique({
-            where: { email },
-          });
+          if (parsedCredentials.success) {
+            const { email, password } = parsedCredentials.data;
+            
+            const user = await db.user.findUnique({
+              where: { email },
+            });
 
-          // Check plain-text password (matches seed data)
-          if (user && user.password === password) {
-            return {
-              id: user.id,
-              name: user.name,
-              email: user.email,
-              role: user.role,
-            };
+            // Check plain-text password (matches seed data)
+            if (user && user.password === password) {
+              return {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+              };
+            }
           }
+          return null;
+        } catch (error) {
+          console.error("❌ Auth Error (Database or Logic):", error);
+          return null;
         }
-
-        return null;
       },
     }),
   ],

@@ -16,12 +16,13 @@ export async function getCategoryById(id: string) {
 
 export async function getCategories() {
   try {
-    return await db.category.findMany({
+    const categories = await db.category.findMany({
       orderBy: { name: 'asc' },
     });
-  } catch (error) {
+    return { categories, error: null };
+  } catch (error: any) {
     console.error("Error fetching categories:", error);
-    return [];
+    return { categories: [], error: error.message || "Failed to fetch categories" };
   }
 }
 
