@@ -8,7 +8,7 @@ import { ArrowRight } from "lucide-react";
 import { getCategories } from "@/actions/categories";
 
 export default async function Home() {
-  const categories = await getCategories();
+  const { categories } = await getCategories();
 
   // Define images for category cards
   const categoryImages: Record<string, string> = {

@@ -31,7 +31,7 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    getCategories().then((data) => {
+    getCategories().then(({ categories: data }) => {
       setCategories(data.map(c => ({ name: c.name, slug: c.slug })));
     });
   }, [pathname]);
