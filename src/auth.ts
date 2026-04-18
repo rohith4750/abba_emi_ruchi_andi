@@ -32,8 +32,8 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
               },
             });
 
-            if (!user) return null;
-
+            if (!user || !user.password) return null;
+            
             // Check if password is a bcrypt hash
             const isHashed = user.password.startsWith("$2");
             
