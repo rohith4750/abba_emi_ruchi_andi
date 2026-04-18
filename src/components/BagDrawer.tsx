@@ -1,10 +1,7 @@
-"use client"
-
-import { useBagStore } from "@/store/useBagStore"
-import { ShoppingBag, X, Plus, Minus, Trash2, ArrowRight, MessageCircle } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
-import Image from "next/image"
-import { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
+import { createOrder } from "@/actions/orders"
+import Link from "next/link"
+import { toast } from "sonner"
 
 export default function BagDrawer({ 
   isOpen, 
@@ -13,8 +10,10 @@ export default function BagDrawer({
   isOpen: boolean; 
   onClose: () => void 
 }) {
-  const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems } = useBagStore()
+  const { data: session } = useSession()
+  const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems, clearBag } = useBagStore()
   const [isMounted, setIsMounted] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
 
   // Prevent hydration mismatch
   useEffect(() => {
@@ -23,18 +22,63 @@ export default function BagDrawer({
 
   if (!isMounted) return null
 
-  const handleWhatsAppCheckout = () => {
-    const phone = "91XXXXXXXXXX" // Admin WhatsApp
-    const message = `Hello Abba Emi Ruchi Andi! I'd like to place an order:
+  const handleWhatsAppCheckout = async () => {
+    if (!session) {
+      toast.info("Please login to place your order")
+      return
+    }
+
+    setIsProcessing(true)
     
+    try {
+      // 1. Save order to database
+      const orderData = {
+        customerName: session.user.name || "Customer",
+        customerPhone: (session.user as any).phone || "",
+        customerEmail: session.user.email || undefined,
+        items: items.map(item => ({
+          productId: item.id,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        total: getTotalPrice(),
+        userId: (session.user as any).id
+      }
+
+      const result = await createOrder(orderData)
+
+      if (!result.success) {
+        toast.error(result.error || "Failed to process order")
+        return
+      }
+
+      // 2. Prepare WhatsApp Message
+      const phone = "91XXXXXXXXXX" // Admin WhatsApp
+      const message = `Hello Abba Emi Ruchi Andi! I'd like to confirm my order:
+      
+*Order ID: ${result.order.id}*
+--------------------------
 ${items.map(item => `- ${item.name} (x${item.quantity}) - ₹${item.price * item.quantity}`).join("\n")}
 
 *Total Order Value: ₹${getTotalPrice()}*
 
-Please confirm my order and let me know the payment details.`
+Please let me know the payment details.`
 
-    const encodedMessage = encodeURIComponent(message)
-    window.open(`https://wa.me/${phone}?text=${encodedMessage}`, "_blank")
+      const encodedMessage = encodeURIComponent(message)
+      
+      // 3. Clear bag and close drawer
+      clearBag()
+      onClose()
+      
+      // 4. Open WhatsApp
+      window.open(`https://wa.me/${phone}?text=${encodedMessage}`, "_blank")
+      toast.success("Order recorded! Opening WhatsApp to confirm payment.")
+    } catch (error) {
+      console.error(error)
+      toast.error("Failed to process checkout")
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
   return (
@@ -155,21 +199,45 @@ Please confirm my order and let me know the payment details.`
                   <span className="text-gray-500 font-medium">Subtotal</span>
                   <span className="text-2xl font-bold text-gray-900">₹{getTotalPrice()}</span>
                 </div>
+                
+                {session ? (
+                   <button 
+                      disabled={isProcessing}
+                      onClick={handleWhatsAppCheckout}
+                      className="w-full bg-brand-green text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:brightness-110 transition-all shadow-xl shadow-green-100 group disabled:opacity-50"
+                   >
+                     {isProcessing ? (
+                       <Loader2 className="h-6 w-6 animate-spin" />
+                     ) : (
+                       <>
+                         <MessageCircle className="h-6 w-6" /> Place Order via WhatsApp
+                         <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                       </>
+                     )}
+                   </button>
+                ) : (
+                  <div className="space-y-3">
+                    <p className="text-center text-xs text-gray-500 font-medium">
+                       Login required to confirm your order details
+                    </p>
+                    <Link 
+                       href="/login"
+                       onClick={onClose}
+                       className="w-full bg-brand-saffron text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:brightness-110 transition-all shadow-xl shadow-brand-saffron/10 group"
+                    >
+                      <Lock className="h-5 w-5" /> Login to Checkout
+                      <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </div>
+                )}
+                
                 <p className="text-[10px] text-gray-400 font-medium text-center italic">
-                   Shipping and taxes calculated at checkout
+                   Shipping and taxes calculated after order confirmation
                 </p>
-                <button 
-                   onClick={handleWhatsAppCheckout}
-                   className="w-full bg-brand-green text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:brightness-110 transition-all shadow-xl shadow-green-100 group"
-                >
-                  <MessageCircle className="h-6 w-6" /> Checkout via WhatsApp
-                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </button>
               </div>
             )}
           </motion.div>
         </>
       )}
-    </AnimatePresence>
   )
 }

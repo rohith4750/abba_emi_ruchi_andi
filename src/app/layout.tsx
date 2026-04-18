@@ -14,8 +14,7 @@ export const metadata: Metadata = {
   description: "Homemade, authentic Telugu flavors delivered to your doorstep. Amma's touch in every jar.",
 };
 
-import Link from "next/link";
-import Image from "next/image";
+import { Providers } from "@/components/Providers";
 
 export default function RootLayout({
   children,
@@ -45,10 +44,12 @@ export default function RootLayout({
           </div>
         </div>
 
-        <div className="relative min-h-screen">
-          {children}
-        </div>
-        <ToastProvider />
+        <Providers>
+          <div className="relative min-h-screen">
+            {children}
+          </div>
+          <ToastProvider />
+        </Providers>
       </body>
     </html>
   );

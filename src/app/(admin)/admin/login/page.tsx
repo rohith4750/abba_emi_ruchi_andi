@@ -137,15 +137,13 @@ function LoginForm() {
 
 export default function AdminLoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-brand-cream/30 px-4">
-      <Suspense fallback={
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-10 h-10 text-brand-green animate-spin" />
-          <p className="text-brand-green font-bold animate-pulse">Loading secure portal...</p>
-        </div>
-      }>
-        <LoginForm />
-      </Suspense>
-    </div>
+    <Suspense fallback={
+      <div className="flex flex-col items-center gap-4">
+        <Loader2 className="w-10 h-10 text-brand-green animate-spin" />
+        <p className="text-brand-green font-bold animate-pulse">Loading secure portal...</p>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }

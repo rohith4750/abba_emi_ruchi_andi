@@ -12,7 +12,7 @@ interface EditProductPageProps {
 export default async function EditProductPage({ params }: EditProductPageProps) {
   const { id } = await params
   
-  const [product, { categories }] = await Promise.all([
+  const [{ product }, { categories }] = await Promise.all([
     getProductById(id),
     getCategories()
   ])

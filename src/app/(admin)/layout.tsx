@@ -39,6 +39,12 @@ export default function AdminLayout({
     { name: "Customers", href: "/admin/customers", icon: Users },
   ];
 
+  const isLoginPage = pathname === "/admin/login";
+
+  if (isLoginPage) {
+    return <main className="min-h-screen bg-gray-50 flex items-center justify-center p-4">{children}</main>;
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}

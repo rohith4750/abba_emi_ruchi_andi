@@ -44,9 +44,12 @@ model Product {
 model User {
   id            String    @id @default(cuid())
   name          String?
-  email         String    @unique
-  password      String
+  username      String?   @unique
+  email         String?   @unique
+  phone         String?   @unique
+  password      String?
   role          UserRole  @default(ADMIN)
+  customer      Customer? 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -79,6 +82,8 @@ model Customer {
   phone     String   @unique
   address   String?
   orders    Order[]
+  userId    String?  @unique
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -101,4 +106,14 @@ enum OrderStatus {
   SHIPPED
   DELIVERED
   CANCELLED
+}
+
+model VerificationToken {
+  id        String   @id @default(cuid())
+  phone     String
+  token     String
+  expires   DateTime
+  createdAt DateTime @default(now())
+
+  @@unique([phone, token])
 }

@@ -3,6 +3,7 @@
 import db from "../lib/db";
 import { revalidatePath } from "next/cache";
 import { OrderStatus } from "@prisma/client";
+import { sendSMS } from "@/lib/sms";
 
 export async function getOrders() {
   try {
@@ -29,6 +30,17 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
       where: { id: orderId },
       data: { status },
     });
+
+    // Send Status Update SMS
+    if (status === "CONFIRMED" || status === "DELIVERED" || status === "CANCELLED") {
+      const message = `Abba Emi Ruchi Andi: Your order #${orderId.slice(-6)} has been ${status.toLowerCase()}!`;
+      try {
+        await sendSMS(order.customerPhone, message);
+      } catch (smsError) {
+        console.error("Failed to send status update SMS:", smsError);
+      }
+    }
+
     revalidatePath("/admin");
     revalidatePath("/admin/orders");
     return { success: true, order };
@@ -58,22 +70,42 @@ export async function createOrder(data: {
   customerEmail?: string;
   items: { productId: string; quantity: number; price: number }[];
   total: number;
+  userId?: string;
 }) {
   try {
     const result = await db.$transaction(async (tx) => {
-      // 1. Upsert Customer using phone number as unique key
-      const customer = await tx.customer.upsert({
-        where: { phone: data.customerPhone },
-        update: {
-          name: data.customerName,
-          email: data.customerEmail,
-        },
-        create: {
-          name: data.customerName,
-          phone: data.customerPhone,
-          email: data.customerEmail,
-        },
-      });
+      let customerId: string | undefined;
+
+      if (data.userId) {
+        // If logged in, get the linked customer
+        const userWithCustomer = await tx.user.findUnique({
+          where: { id: data.userId },
+          include: { customer: true }
+        });
+
+        if (userWithCustomer?.customer) {
+          customerId = userWithCustomer.customer.id;
+        }
+      }
+
+      if (!customerId) {
+        // Fallback: Upsert Customer using phone number
+        const customer = await tx.customer.upsert({
+          where: { phone: data.customerPhone },
+          update: {
+            name: data.customerName,
+            email: data.customerEmail,
+            userId: data.userId || undefined,
+          },
+          create: {
+            name: data.customerName,
+            phone: data.customerPhone,
+            email: data.customerEmail,
+            userId: data.userId || undefined,
+          },
+        });
+        customerId = customer.id;
+      }
 
       // 2. Create Order linked to the customer
       const order = await tx.order.create({
@@ -82,7 +114,7 @@ export async function createOrder(data: {
           customerPhone: data.customerPhone,
           customerEmail: data.customerEmail,
           total: data.total,
-          customerId: customer.id,
+          customerId: customerId,
           items: {
             create: data.items.map(item => ({
               productId: item.productId,
@@ -95,6 +127,14 @@ export async function createOrder(data: {
 
       return order;
     });
+
+    // Send Confirmation SMS
+    const message = `Abba Emi Ruchi Andi: Order received! Your Order ID is #${result.id.slice(-6)}. Amount: ₹${data.total}. We'll notify you when it's confirmed.`;
+    try {
+      await sendSMS(data.customerPhone, message);
+    } catch (smsError) {
+      console.error("Failed to send order confirmation SMS:", smsError);
+    }
 
     revalidatePath("/admin");
     revalidatePath("/admin/orders");
