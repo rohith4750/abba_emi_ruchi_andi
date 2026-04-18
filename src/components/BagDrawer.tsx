@@ -2,6 +2,21 @@ import { useSession } from "next-auth/react"
 import { createOrder } from "@/actions/orders"
 import Link from "next/link"
 import { toast } from "sonner"
+import { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import Image from "next/image"
+import { 
+  ShoppingBag, 
+  X, 
+  Trash2, 
+  Plus, 
+  Minus, 
+  MessageCircle, 
+  ArrowRight, 
+  Loader2, 
+  Lock 
+} from "lucide-react"
+import { useBagStore } from "@/store/useBagStore"
 
 export default function BagDrawer({ 
   isOpen, 
@@ -47,7 +62,7 @@ export default function BagDrawer({
 
       const result = await createOrder(orderData)
 
-      if (!result.success) {
+      if (!result.success || !result.order) {
         toast.error(result.error || "Failed to process order")
         return
       }
@@ -239,5 +254,6 @@ Please let me know the payment details.`
           </motion.div>
         </>
       )}
-  )
+    </AnimatePresence>
+  );
 }

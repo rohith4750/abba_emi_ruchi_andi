@@ -4,6 +4,7 @@ import db from "@/lib/db";
 import { generateOTP } from "@/lib/otp";
 import { sendOTPSMS } from "@/lib/sms";
 import { z } from "zod";
+import bcrypt from "bcryptjs";
 
 const PhoneSchema = z.object({
   phone: z.string().min(10, "Invalid phone number").max(13, "Invalid phone number"),
@@ -63,5 +64,46 @@ export async function sendOtpAction(formData: FormData) {
     return { success: true, message: "OTP sent successfully!" };
   } catch (error) {
     return { error: "Failed to send SMS. Please check your number." };
+  }
+}
+
+export async function registerUser(data: any) {
+  const { name, email, phone, username, password } = data;
+
+  try {
+    // 1. Check if user already exists
+    const existingUser = await db.user.findFirst({
+      where: {
+        OR: [
+          { email },
+          { phone },
+          ...(username ? [{ username }] : []),
+        ],
+      },
+    });
+
+    if (existingUser) {
+      return { success: false, error: "User with this email or phone already exists" };
+    }
+
+    // 2. Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 3. Create user
+    const user = await db.user.create({
+      data: {
+        name,
+        email,
+        phone,
+        username: username || null,
+        password: hashedPassword,
+        role: "USER",
+      },
+    });
+
+    return { success: true, user };
+  } catch (error: any) {
+    console.error("Registration error:", error);
+    return { success: false, error: error.message || "Failed to register account" };
   }
 }
