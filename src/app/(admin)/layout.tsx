@@ -15,7 +15,8 @@ import {
   Settings, 
   LogOut,
   ChevronLeft,
-  Menu
+  Menu,
+  ShieldAlert
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -37,6 +38,7 @@ export default function AdminLayout({
     { name: "Orders", href: "/admin/orders", icon: ShoppingCart, badge: pendingOrders },
     { name: "Categories", href: "/admin/categories", icon: Tags },
     { name: "Customers", href: "/admin/customers", icon: Users },
+    { name: "Users", href: "/admin/users", icon: ShieldAlert },
   ];
 
   const isLoginPage = pathname === "/admin/login";
