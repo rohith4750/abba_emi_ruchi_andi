@@ -131,10 +131,12 @@ export async function createOrder(data: {
           customerId: customerId,
           items: {
             create: data.items.map(item => ({
-              productId: item.productId,
               quantity: item.quantity,
-              price: item.price,
-              weight: item.weight,
+              price: item.price || 0,
+              weight: item.weight || "Standard",
+              product: {
+                connect: { id: item.productId }
+              }
             })),
           },
         },

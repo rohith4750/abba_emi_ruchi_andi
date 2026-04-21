@@ -1,106 +1,81 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
-import { useBagStore } from "@/store/useBagStore"
-import { ShoppingBag, Eye, Heart } from "lucide-react"
-import { toast } from "sonner"
+import { Eye, Clock, Award, Star } from "lucide-react"
 
 interface ProductCardProps {
   product: any
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const addItem = useBagStore(state => state.addItem)
-
-  const handleAddToBag = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    addItem(product)
-    toast.success(`${product.name} added to your bag`)
-  }
+  const detailUrl = `/product/${product.slug.toLowerCase().replace(/\s+/g, '-')}`
 
   return (
-    <div className="group bg-white rounded-3xl overflow-hidden border border-gray-100 transition-all duration-500 hover:shadow-2xl hover:shadow-brand-saffron/10 hover:-translate-y-2 relative">
-      {/* Badge */}
-      <div className="absolute top-4 left-4 z-10">
-        <span className="px-3 py-1 bg-brand-green/80 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-widest rounded-full">
-          Handmade
-        </span>
-      </div>
-
-      {/* Action Buttons (Hover) */}
-      <div className="absolute top-4 right-4 z-10 flex flex-col gap-2 translate-x-12 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
-        <button className="h-10 w-10 rounded-full bg-white shadow-xl flex items-center justify-center text-gray-400 hover:text-brand-red transition-colors">
-          <Heart className="h-5 w-5" />
-        </button>
-        <Link 
-          href={`/product/${product.slug.toLowerCase().replace(/\s+/g, '-')}`}
-          className="h-10 w-10 rounded-full bg-white shadow-xl flex items-center justify-center text-gray-400 hover:text-brand-green transition-colors"
-        >
-          <Eye className="h-5 w-5" />
-        </Link>
-      </div>
-
-      {/* Text Badge Replacement for Image */}
-      <Link href={`/product/${product.slug.toLowerCase().replace(/\s+/g, '-')}`}>
-        <div className="aspect-[4/5] relative overflow-hidden bg-gradient-to-br from-brand-cream/80 to-brand-saffron/10 flex flex-col items-center justify-center p-6 text-center border-b border-brand-saffron/10">
-          <div className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#C18A3E 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
-          
-          <div className="w-full h-full border-2 border-brand-saffron/20 rounded-2xl flex flex-col items-center justify-center p-4 relative">
-             <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-brand-cream px-3 py-0.5 text-[8px] font-bold text-brand-saffron uppercase tracking-[0.3em] border border-brand-saffron/20 rounded-full whitespace-nowrap">
-                Abba Emi Ruchi
-             </div>
-             
-             <h3 className="text-xl sm:text-2xl font-black text-brand-green font-serif leading-tight">
-                {product.name}
-             </h3>
-             
-             <div className="mt-4 flex items-center gap-2">
-                <div className="h-[1px] w-8 bg-brand-saffron/30" />
-                <span className="text-[10px] font-bold text-brand-saffron uppercase tracking-widest">Heritage Recipe</span>
-                <div className="h-[1px] w-8 bg-brand-saffron/30" />
-             </div>
-          </div>
-
-          {/* Quick Add Overlay */}
-          <div className="absolute inset-x-0 bottom-0 p-2 sm:p-4 bg-gradient-to-t from-white/90 to-transparent backdrop-blur-[2px]">
-             <button 
-                onClick={handleAddToBag}
-                className="w-full bg-brand-green text-white py-2 sm:py-3 rounded-xl font-bold flex items-center justify-center gap-1 sm:gap-2 shadow-lg hover:brightness-110 transition-all text-[10px] sm:text-sm group-hover:scale-105 transition-transform"
-             >
-                <ShoppingBag className="h-3 w-3 sm:h-4 sm:w-4" /> View Details
-             </button>
-          </div>
-        </div>
-      </Link>
-
-      {/* Info */}
-      <div className="p-3 sm:p-6">
-        <Link href={`/category/${product.category?.slug.toLowerCase().replace(/\s+/g, '-')}`}>
-          <span className="text-[8px] sm:text-[10px] uppercase font-bold text-brand-saffron tracking-widest hover:text-brand-green transition-colors">
-            {product.category?.name || "Pickles"}
-          </span>
-        </Link>
-        <Link href={`/product/${product.slug.toLowerCase().replace(/\s+/g, '-')}`}>
-          <h3 className="text-xs sm:text-lg font-bold text-gray-900 mt-0.5 sm:mt-1 line-clamp-1 group-hover:text-brand-green transition-colors">
-            {product.name}
-          </h3>
-        </Link>
-        <p className="hidden sm:block text-gray-500 text-xs mt-2 line-clamp-2 leading-relaxed h-8">
-          {product.description}
-        </p>
+    <Link href={detailUrl} className="block group">
+      <div className="relative aspect-[4/5] bg-white rounded-[48px] overflow-hidden transition-all duration-700 group-hover:shadow-[0_40px_80px_-20px_rgba(193,138,62,0.15)] group-hover:-translate-y-3 border border-gray-100/50">
+        {/* Background Patterns & Textures */}
+        <div className="absolute inset-0 opacity-[0.02] pointer-events-none group-hover:opacity-[0.04] transition-opacity" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/natural-paper.png")' }} />
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-cream/20 via-transparent to-brand-saffron/5" />
         
-        <div className="mt-2 sm:mt-4 flex items-center justify-between">
-          <span className="text-sm sm:text-xl font-bold text-brand-green">
-            ₹{product.price.toString()}
-          </span>
-          <div className="hidden sm:flex items-center gap-1">
-             <div className="h-1 w-1 rounded-full bg-brand-green" />
-             <span className="text-[10px] font-bold text-gray-400 uppercase">Available</span>
-          </div>
+        {/* Decorative Frame */}
+        <div className="absolute inset-4 border-[0.5px] border-brand-saffron/10 rounded-[40px] pointer-events-none group-hover:border-brand-saffron/30 transition-all duration-500" />
+        <div className="absolute inset-6 border-[0.5px] border-brand-saffron/5 rounded-[36px] pointer-events-none" />
+        
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-10 text-center">
+            {/* Header Badge */}
+            <div className="mb-6 flex flex-col items-center gap-3">
+                <div className="relative">
+                   <Award className="h-6 w-6 text-brand-saffron/20 group-hover:text-brand-saffron/60 transition-colors duration-500" />
+                   <div className="absolute inset-0 blur-sm bg-brand-saffron/10 scale-150 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+                <span className="text-[10px] font-bold text-brand-saffron uppercase tracking-[0.4em] translate-y-1 opacity-60">
+                   Premium Heritage
+                </span>
+            </div>
+
+            {/* Product Name - Typography focused */}
+            <div className="relative mb-6">
+                <h3 className="text-2xl sm:text-3xl font-black text-brand-green font-serif leading-tight group-hover:scale-110 transition-transform duration-700 ease-out">
+                    {product.name}
+                </h3>
+            </div>
+
+            <div className="flex items-center gap-1 mb-8">
+               {[1,2,3,4,5].map(i => <Star key={i} className="h-2.5 w-2.5 fill-brand-saffron/20 text-transparent group-hover:fill-brand-saffron transition-colors" style={{ transitionDelay: `${i * 100}ms` }} />)}
+            </div>
+
+            {/* Price Tag */}
+            <div className="flex flex-col items-center gap-1.5 mb-10 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                <span className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em]">Authentic Batch #2024</span>
+                <div className="flex items-baseline gap-1">
+                   <span className="text-xs font-bold text-gray-400">₹</span>
+                   <span className="text-3xl font-black text-gray-900 tracking-tight">
+                      {product.price.toString()}
+                   </span>
+                </div>
+            </div>
+
+            {/* CTA Overlay */}
+            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 translate-y-6 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700 ease-in-out">
+                <div className="bg-brand-green text-white px-10 py-4 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] flex items-center gap-3 shadow-2xl shadow-green-200/50 hover:bg-gray-900 transition-colors">
+                    <Eye className="h-4 w-4" /> View Details
+                </div>
+            </div>
         </div>
+
+        {/* Subtle Bottom Accent */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-brand-saffron/20 rounded-t-full" />
       </div>
-    </div>
+      
+      {/* External Labeling */}
+      <div className="mt-8 text-center">
+          <span className="text-[9px] font-black text-brand-saffron/80 uppercase tracking-[0.4em] mb-2 block group-hover:text-brand-green transition-colors">
+             {product.category?.name || "South Indian Specialty"}
+          </span>
+          <p className="text-xs font-medium text-gray-400 italic line-clamp-1 max-w-[200px] mx-auto opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+            "{product.description}"
+          </p>
+      </div>
+    </Link>
   )
 }
