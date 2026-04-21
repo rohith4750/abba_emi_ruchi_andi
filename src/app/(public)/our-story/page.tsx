@@ -1,6 +1,7 @@
 import Image from "next/image"
 import { Metadata } from 'next'
 import { Heart, Sprout, History, ShieldCheck, Sun, Star } from "lucide-react"
+import DynamicBackButton from "@/components/DynamicBackButton"
 
 export const metadata: Metadata = {
   title: 'Homemade Pickles & Podis in India | Abba Emi Ruchi Andi',
@@ -10,6 +11,9 @@ export const metadata: Metadata = {
 export default function OurStoryPage() {
   return (
     <div className="pt-32 pb-20">
+      <div className="container mx-auto px-4 mb-8">
+        <DynamicBackButton />
+      </div>
       {/* Hero Section */}
       <section className="container mx-auto px-4 mb-20 text-center">
         <div className="max-w-4xl mx-auto">
