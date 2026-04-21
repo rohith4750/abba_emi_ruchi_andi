@@ -50,16 +50,16 @@ export default async function AccountPage() {
                         <div className="absolute -top-12 -left-12 w-64 h-64 bg-brand-saffron/5 rounded-full blur-3xl -z-10" />
                         <span className="text-[10px] font-black text-brand-saffron uppercase tracking-[0.4em] block mb-2">Artisan Dashboard</span>
                         <h1 className="text-4xl md:text-6xl font-black text-brand-green font-serif">
-                            {user.name || customer.name}'s Kitchen
+                            {(user.name || customer?.name || "Artisan")}'s Kitchen
                         </h1>
                         <div className="mt-4 flex flex-wrap items-center gap-6">
                             <div className="flex items-center gap-2 text-sm text-gray-500">
                                 <Phone className="h-4 w-4 text-brand-saffron/60" />
-                                <span>{customer.phone}</span>
+                                <span>{customer?.phone || user.phone || "N/A"}</span>
                             </div>
                             <div className="flex items-center gap-2 text-sm text-gray-500">
                                 <MapPin className="h-4 w-4 text-brand-saffron/60" />
-                                <span className="line-clamp-1">{customer.address || "Update your address below"}</span>
+                                <span className="line-clamp-1">{customer?.address || "No address saved"}</span>
                             </div>
                         </div>
                     </div>
@@ -87,7 +87,7 @@ export default async function AccountPage() {
                                     <div className="relative z-10">
                                         <p className="text-[9px] uppercase font-black text-brand-saffron tracking-[0.2em] mb-2 opacity-60">Delivery Details</p>
                                         <p className="text-sm text-gray-600 leading-relaxed italic">
-                                            {customer.address || "Please provide your address during your next artisan order checkout."}
+                                            {customer?.address || "Please provide your address during your next artisan order checkout."}
                                         </p>
                                     </div>
                                 </div>
