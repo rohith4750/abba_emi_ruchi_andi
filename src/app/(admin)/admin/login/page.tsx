@@ -53,6 +53,7 @@ function LoginForm() {
             src="/logo.png" 
             alt="Logo" 
             fill
+            sizes="96px"
             className="object-cover scale-125"
            />
         </div>

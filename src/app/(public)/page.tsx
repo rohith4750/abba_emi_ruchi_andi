@@ -45,6 +45,7 @@ export default async function Home() {
                   src={categoryImages[category.slug] || '/logo.png'} 
                   alt={category.name}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover transition-transform duration-1000 group-hover:scale-110"
                 />
                 {/* Premium Gradient Overlay */}
@@ -96,6 +97,7 @@ export default async function Home() {
                 src="/logo.png" 
                 alt="Abba Emi Ruchi Andi Heritage" 
                 fill
+                sizes="(max-width: 1024px) 96px, 128px"
                 className="object-cover scale-110"
                />
              </div>

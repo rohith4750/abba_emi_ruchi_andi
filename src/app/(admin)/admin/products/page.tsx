@@ -1,5 +1,6 @@
 import { getProducts } from "@/actions/products"
 import ProductList from "./ProductList"
+import DynamicBackButton from "@/components/DynamicBackButton"
 
 export default async function ProductsPage() {
   const { products, error } = await getProducts()
@@ -7,7 +8,8 @@ export default async function ProductsPage() {
   const serializedProducts = JSON.parse(JSON.stringify(products))
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      <DynamicBackButton className="mb-2" />
       <div>
         <h1 className="text-3xl font-bold text-brand-green">Product Inventory</h1>
         <p className="text-gray-500 mt-2 italic">Monitor stock levels and manage your offerings.</p>

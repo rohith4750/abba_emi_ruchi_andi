@@ -1,20 +1,19 @@
+"use client"
+
 import { useSession } from "next-auth/react"
-import { createOrder } from "@/actions/orders"
 import Link from "next/link"
 import { toast } from "sonner"
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import Image from "next/image"
 import { 
   ShoppingBag, 
   X, 
   Trash2, 
   Plus, 
   Minus, 
-  MessageCircle, 
   ArrowRight, 
-  Loader2, 
-  Lock 
+  Lock,
+  Package
 } from "lucide-react"
 import { useBagStore } from "@/store/useBagStore"
 
@@ -26,9 +25,8 @@ export default function BagDrawer({
   onClose: () => void 
 }) {
   const { data: session } = useSession()
-  const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems, clearBag } = useBagStore()
+  const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems } = useBagStore()
   const [isMounted, setIsMounted] = useState(false)
-  const [isProcessing, setIsProcessing] = useState(false)
 
   // Prevent hydration mismatch
   useEffect(() => {
@@ -36,65 +34,6 @@ export default function BagDrawer({
   }, [])
 
   if (!isMounted) return null
-
-  const handleWhatsAppCheckout = async () => {
-    if (!session) {
-      toast.info("Please login to place your order")
-      return
-    }
-
-    setIsProcessing(true)
-    
-    try {
-      // 1. Save order to database
-      const orderData = {
-        customerName: session.user.name || "Customer",
-        customerPhone: (session.user as any).phone || "",
-        customerEmail: session.user.email || undefined,
-        items: items.map(item => ({
-          productId: item.id,
-          quantity: item.quantity,
-          price: item.price
-        })),
-        total: getTotalPrice(),
-        userId: (session.user as any).id
-      }
-
-      const result = await createOrder(orderData)
-
-      if (!result.success || !result.order) {
-        toast.error(result.error || "Failed to process order")
-        return
-      }
-
-      // 2. Prepare WhatsApp Message
-      const phone = "91XXXXXXXXXX" // Admin WhatsApp
-      const message = `Hello Abba Emi Ruchi Andi! I'd like to confirm my order:
-      
-*Order ID: ${result.order.id}*
---------------------------
-${items.map(item => `- ${item.name} (x${item.quantity}) - ₹${item.price * item.quantity}`).join("\n")}
-
-*Total Order Value: ₹${getTotalPrice()}*
-
-Please let me know the payment details.`
-
-      const encodedMessage = encodeURIComponent(message)
-      
-      // 3. Clear bag and close drawer
-      clearBag()
-      onClose()
-      
-      // 4. Open WhatsApp
-      window.open(`https://wa.me/${phone}?text=${encodedMessage}`, "_blank")
-      toast.success("Order recorded! Opening WhatsApp to confirm payment.")
-    } catch (error) {
-      console.error(error)
-      toast.error("Failed to process checkout")
-    } finally {
-      setIsProcessing(false)
-    }
-  }
 
   return (
     <AnimatePresence>
@@ -159,21 +98,21 @@ Please let me know the payment details.`
                 </div>
               ) : (
                 items.map((item) => (
-                  <div key={item.id} className="flex gap-4 group">
-                    <div className="h-24 w-24 rounded-2xl overflow-hidden bg-gray-100 relative shrink-0">
-                      {item.image ? (
-                        <Image src={item.image} alt={item.name} fill className="object-cover" />
-                      ) : (
-                        <div className="h-full w-full flex items-center justify-center text-gray-300">
-                           <ShoppingBag className="h-8 w-8" />
-                        </div>
-                      )}
+                  <div key={`${item.id}-${item.weight}`} className="flex gap-4 group">
+                    <div className="h-24 w-24 rounded-2xl overflow-hidden bg-brand-green/5 border border-brand-green/10 flex items-center justify-center text-brand-green relative shrink-0">
+                       <Package className="h-8 w-8 opacity-40" />
+                       <div className="absolute top-1 right-1 bg-brand-saffron px-1.5 py-0.5 rounded-md text-[8px] font-bold text-white uppercase">
+                         {item.weight}
+                       </div>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start">
-                        <h4 className="font-bold text-gray-900 truncate pr-4">{item.name}</h4>
+                        <div>
+                          <h4 className="font-bold text-gray-900 truncate pr-4">{item.name}</h4>
+                          <p className="text-[10px] font-bold text-brand-saffron uppercase tracking-widest">{item.weight}</p>
+                        </div>
                         <button 
-                          onClick={() => removeItem(item.id)}
+                          onClick={() => removeItem(item.id, item.weight)}
                           className="text-gray-400 hover:text-red-500 transition-colors"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -184,14 +123,14 @@ Please let me know the payment details.`
                       <div className="flex items-center justify-between mt-4">
                         <div className="flex items-center gap-3 bg-gray-100 rounded-lg px-2 py-1">
                           <button 
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() => updateQuantity(item.id, item.weight, item.quantity - 1)}
                             className="p-1 hover:text-brand-green transition-colors"
                           >
                             <Minus className="h-3 w-3" />
                           </button>
                           <span className="text-sm font-bold w-4 text-center">{item.quantity}</span>
                           <button 
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => updateQuantity(item.id, item.weight, item.quantity + 1)}
                             className="p-1 hover:text-brand-green transition-colors"
                           >
                             <Plus className="h-3 w-3" />
@@ -216,24 +155,18 @@ Please let me know the payment details.`
                 </div>
                 
                 {session ? (
-                   <button 
-                      disabled={isProcessing}
-                      onClick={handleWhatsAppCheckout}
-                      className="w-full bg-brand-green text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:brightness-110 transition-all shadow-xl shadow-green-100 group disabled:opacity-50"
+                   <Link 
+                      href="/checkout"
+                      onClick={onClose}
+                      className="w-full bg-brand-green text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:brightness-110 transition-all shadow-xl shadow-green-100 group"
                    >
-                     {isProcessing ? (
-                       <Loader2 className="h-6 w-6 animate-spin" />
-                     ) : (
-                       <>
-                         <MessageCircle className="h-6 w-6" /> Place Order via WhatsApp
-                         <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                       </>
-                     )}
-                   </button>
+                     Proceed to Checkout
+                     <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                   </Link>
                 ) : (
                   <div className="space-y-3">
                     <p className="text-center text-xs text-gray-500 font-medium">
-                       Login required to confirm your order details
+                       Login required to complete your order
                     </p>
                     <Link 
                        href="/login"
@@ -247,7 +180,7 @@ Please let me know the payment details.`
                 )}
                 
                 <p className="text-[10px] text-gray-400 font-medium text-center italic">
-                   Shipping and taxes calculated after order confirmation
+                   Items are freshly packed after order confirmation.
                 </p>
               </div>
             )}

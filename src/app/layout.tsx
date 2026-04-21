@@ -32,6 +32,8 @@ export default function RootLayout({
               src="/logo.png" 
               alt="" 
               fill 
+              sizes="600px"
+              priority
               className="object-contain"
             />
           </div>
@@ -40,6 +42,7 @@ export default function RootLayout({
               src="/logo.png" 
               alt="" 
               fill 
+              sizes="800px"
               className="object-contain"
             />
           </div>

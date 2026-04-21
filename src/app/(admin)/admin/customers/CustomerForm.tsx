@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { upsertCustomer } from "@/actions/customers"
 import { ChevronLeft, Save, User, Phone, Mail, MapPin } from "lucide-react"
+import DynamicBackButton from "@/components/DynamicBackButton"
 import Link from "next/link"
 
 interface CustomerFormProps {
@@ -52,13 +53,7 @@ export default function CustomerForm({ initialData }: CustomerFormProps) {
   return (
     <div className="max-w-4xl mx-auto pb-20">
       <div className="flex items-center justify-between mb-8">
-        <Link 
-          href="/admin/customers"
-          className="flex items-center gap-2 text-gray-500 hover:text-brand-green transition-colors"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          <span className="font-medium">Back to Customers</span>
-        </Link>
+        <DynamicBackButton />
         <h1 className="text-2xl font-bold text-gray-900">
           {initialData ? "Edit Customer Profile" : "Add New Customer"}
         </h1>

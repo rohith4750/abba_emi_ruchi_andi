@@ -42,28 +42,34 @@ export default function ProductCard({ product }: ProductCardProps) {
         </Link>
       </div>
 
-      {/* Image Container */}
+      {/* Text Badge Replacement for Image */}
       <Link href={`/product/${product.slug.toLowerCase().replace(/\s+/g, '-')}`}>
-        <div className="aspect-[4/5] relative overflow-hidden bg-brand-cream/30">
-          {product.images?.[0] ? (
-            <Image 
-              src={product.images[0]} 
-              alt={product.name} 
-              fill 
-              className="object-cover transition-transform duration-700 group-hover:scale-110" 
-            />
-          ) : (
-            <div className="h-full w-full flex items-center justify-center italic text-gray-300">
-               Image Coming Soon
-            </div>
-          )}
-          {/* Add to Bag Overly (Mobile Optimized) */}
-          <div className="absolute inset-x-0 bottom-0 p-2 sm:p-4 bg-gradient-to-t from-black/20 to-transparent">
+        <div className="aspect-[4/5] relative overflow-hidden bg-gradient-to-br from-brand-cream/80 to-brand-saffron/10 flex flex-col items-center justify-center p-6 text-center border-b border-brand-saffron/10">
+          <div className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#C18A3E 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+          
+          <div className="w-full h-full border-2 border-brand-saffron/20 rounded-2xl flex flex-col items-center justify-center p-4 relative">
+             <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-brand-cream px-3 py-0.5 text-[8px] font-bold text-brand-saffron uppercase tracking-[0.3em] border border-brand-saffron/20 rounded-full whitespace-nowrap">
+                Abba Emi Ruchi
+             </div>
+             
+             <h3 className="text-xl sm:text-2xl font-black text-brand-green font-serif leading-tight">
+                {product.name}
+             </h3>
+             
+             <div className="mt-4 flex items-center gap-2">
+                <div className="h-[1px] w-8 bg-brand-saffron/30" />
+                <span className="text-[10px] font-bold text-brand-saffron uppercase tracking-widest">Heritage Recipe</span>
+                <div className="h-[1px] w-8 bg-brand-saffron/30" />
+             </div>
+          </div>
+
+          {/* Quick Add Overlay */}
+          <div className="absolute inset-x-0 bottom-0 p-2 sm:p-4 bg-gradient-to-t from-white/90 to-transparent backdrop-blur-[2px]">
              <button 
                 onClick={handleAddToBag}
-                className="w-full bg-brand-green text-white py-2 sm:py-3 rounded-xl font-bold flex items-center justify-center gap-1 sm:gap-2 shadow-lg hover:brightness-110 transition-all text-[10px] sm:text-sm"
+                className="w-full bg-brand-green text-white py-2 sm:py-3 rounded-xl font-bold flex items-center justify-center gap-1 sm:gap-2 shadow-lg hover:brightness-110 transition-all text-[10px] sm:text-sm group-hover:scale-105 transition-transform"
              >
-                <ShoppingBag className="h-3 w-3 sm:h-4 sm:w-4" /> Add
+                <ShoppingBag className="h-3 w-3 sm:h-4 sm:w-4" /> View Details
              </button>
           </div>
         </div>

@@ -7,7 +7,7 @@ export async function getProductById(id: string) {
   try {
     const product = await db.product.findUnique({
       where: { id },
-      include: { category: true },
+      include: { category: true, sizes: true },
     });
     return { product, error: null };
   } catch (error: any) {
@@ -22,7 +22,7 @@ export async function getProductsByCategorySlug(slug: string) {
       where: { slug },
       include: {
         products: {
-          include: { category: true }
+          include: { category: true, sizes: true }
         }
       }
     });
@@ -38,7 +38,7 @@ export async function getProductBySlug(slug: string) {
   try {
     const product = await db.product.findUnique({
       where: { slug },
-      include: { category: true }
+      include: { category: true, sizes: true }
     });
     return { product, error: null };
   } catch (error: any) {
@@ -50,7 +50,7 @@ export async function getProductBySlug(slug: string) {
 export async function getProducts() {
   try {
     const products = await db.product.findMany({
-      include: { category: true },
+      include: { category: true, sizes: true },
       orderBy: { createdAt: 'desc' },
     });
     return { products, error: null };
@@ -64,7 +64,7 @@ export async function getFeaturedProducts(limit = 6) {
   try {
     const products = await db.product.findMany({
       take: limit,
-      include: { category: true },
+      include: { category: true, sizes: true },
       orderBy: { createdAt: 'desc' },
     });
     return { products, error: null };

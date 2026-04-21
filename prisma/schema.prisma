@@ -34,11 +34,25 @@ model Product {
   images      String[]
   categoryId  String
   category    Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  sizes       ProductSize[]
   orderItems  OrderItem[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
   @@index([slug])
+}
+
+model ProductSize {
+  id        String   @id @default(cuid())
+  weight    String   // "250g", "500g", "1kg"
+  price     Decimal  @db.Decimal(10, 2)
+  stock     Int      @default(0)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
 }
 
 model User {
@@ -65,6 +79,9 @@ model Order {
   customerPhone String
   customerEmail String?
   total         Decimal     @db.Decimal(10, 2)
+  address       String?
+  paymentMethod String      @default("COD")
+  paymentStatus String      @default("PENDING") // PENDING, PAID
   status        OrderStatus @default(PENDING)
   items         OrderItem[]
   customerId    String?
@@ -98,11 +115,12 @@ model OrderItem {
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   quantity  Int
   price     Decimal @db.Decimal(10, 2)
+  weight    String? // Store selected weight e.g., "500g"
 }
 
 enum OrderStatus {
   PENDING
-  CONFIRMED
+  PREPARING
   SHIPPED
   DELIVERED
   CANCELLED

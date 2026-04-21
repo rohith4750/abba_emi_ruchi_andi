@@ -1,5 +1,6 @@
 import { getProducts } from "@/actions/products"
 import ProductCard from "@/components/ProductCard"
+import DynamicBackButton from "@/components/DynamicBackButton"
 
 export default async function ShopPage() {
   const { products, error } = await getProducts()
@@ -10,6 +11,7 @@ export default async function ShopPage() {
   return (
     <div className="pt-32 pb-20">
       <div className="container mx-auto px-4">
+        <DynamicBackButton />
         {/* Header */}
         <div className="max-w-3xl mb-12">
           <span className="text-brand-saffron font-bold uppercase tracking-[0.3em] text-xs">

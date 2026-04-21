@@ -2,6 +2,7 @@ import { getProductsByCategorySlug } from "@/actions/products"
 import { getCategories } from "@/actions/categories"
 import ProductCard from "@/components/ProductCard"
 import { notFound } from "next/navigation"
+import DynamicBackButton from "@/components/DynamicBackButton"
 
 interface CategoryPageProps {
   params: Promise<{
@@ -25,6 +26,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   return (
     <div className="pt-32 pb-20">
       <div className="container mx-auto px-4">
+        <DynamicBackButton />
         {/* Header */}
         <div className="max-w-3xl mb-12">
           <span className="text-brand-saffron font-bold uppercase tracking-[0.3em] text-xs">

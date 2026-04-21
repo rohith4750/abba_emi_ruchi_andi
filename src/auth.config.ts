@@ -29,12 +29,20 @@ export const authConfig = {
       const isLoginRoute = nextUrl.pathname === "/admin/login";
 
       if (isAdminRoute && !isLoginRoute) {
-        if (isLoggedIn) return true;
-        return false;
+        if (!isLoggedIn) return false; // Redirect to sign-in page
+        
+        // Check if user has ADMIN role
+        if (auth.user?.role !== "ADMIN") {
+          return Response.redirect(new URL("/", nextUrl)); // Redirect non-admins to home
+        }
+        return true;
       }
       
       if (isLoginRoute && isLoggedIn) {
-        return Response.redirect(new URL("/admin", nextUrl));
+        if (auth.user?.role === "ADMIN") {
+          return Response.redirect(new URL("/admin", nextUrl));
+        }
+        return Response.redirect(new URL("/", nextUrl));
       }
 
       return true;

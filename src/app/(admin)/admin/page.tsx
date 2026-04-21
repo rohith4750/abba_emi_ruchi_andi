@@ -132,7 +132,7 @@ export default async function AdminDashboard() {
                       <span className={cn(
                         "text-[10px] font-bold px-2.5 py-1 rounded-full border shadow-sm",
                         order.status === "PENDING" ? "bg-amber-50 border-amber-200 text-amber-700" :
-                        order.status === "CONFIRMED" ? "bg-blue-50 border-blue-200 text-blue-700" :
+                        order.status === "PREPARING" ? "bg-blue-50 border-blue-200 text-blue-700" :
                         "bg-green-50 border-green-200 text-green-700"
                       )}>
                         {order.status}

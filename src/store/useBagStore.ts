@@ -6,14 +6,15 @@ export interface BagItem {
   name: string;
   price: number;
   quantity: number;
+  weight: string; // Add weight e.g., "250g"
   image?: string;
 }
 
 interface BagStore {
   items: BagItem[];
-  addItem: (product: any) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
+  addItem: (product: any, selectedWeight: string, selectedPrice: number) => void;
+  removeItem: (id: string, weight: string) => void;
+  updateQuantity: (id: string, weight: string, quantity: number) => void;
   clearBag: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
@@ -23,14 +24,17 @@ export const useBagStore = create<BagStore>()(
   persist(
     (set, get) => ({
       items: [],
-      addItem: (product) => {
+      addItem: (product, selectedWeight, selectedPrice) => {
         const currentItems = get().items;
-        const existingItem = currentItems.find((item) => item.id === product.id);
+        // Unique check based on ID AND weight
+        const existingItem = currentItems.find(
+          (item) => item.id === product.id && item.weight === selectedWeight
+        );
 
         if (existingItem) {
           set({
             items: currentItems.map((item) =>
-              item.id === product.id
+              item.id === product.id && item.weight === selectedWeight
                 ? { ...item, quantity: item.quantity + 1 }
                 : item
             ),
@@ -42,27 +46,28 @@ export const useBagStore = create<BagStore>()(
               {
                 id: product.id,
                 name: product.name,
-                price: Number(product.price),
+                price: Number(selectedPrice),
                 quantity: 1,
-                image: product.images?.[0],
+                weight: selectedWeight,
+                image: product.images?.[0], // Still keep if available, though we hide them
               },
             ],
           });
         }
       },
-      removeItem: (id) => {
+      removeItem: (id, weight) => {
         set({
-          items: get().items.filter((item) => item.id !== id),
+          items: get().items.filter((item) => !(item.id === id && item.weight === weight)),
         });
       },
-      updateQuantity: (id, quantity) => {
+      updateQuantity: (id, weight, quantity) => {
         if (quantity <= 0) {
-          get().removeItem(id);
+          get().removeItem(id, weight);
           return;
         }
         set({
           items: get().items.map((item) =>
-            item.id === id ? { ...item, quantity } : item
+            item.id === id && item.weight === weight ? { ...item, quantity } : item
           ),
         });
       },

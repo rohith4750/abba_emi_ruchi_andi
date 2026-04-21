@@ -1,7 +1,12 @@
 import { PrismaClient } from "@prisma/client"
+import { PrismaPg } from "@prisma/adapter-pg"
+import pg from "pg"
 import "dotenv/config"
 
-const prisma = new PrismaClient()
+const connectionString = process.env.DATABASE_URL
+const pool = new pg.Pool({ connectionString })
+const adapter = new PrismaPg(pool)
+const prisma = new PrismaClient({ adapter })
 
 async function main() {
   // 1. Create Admin User
@@ -53,35 +58,71 @@ async function main() {
         name: 'Avakaya Pickle',
         slug: 'avakaya-pickle',
         description: 'The King of Pickles - Spicy Mango Pickle made with premium mustard oil.',
-        price: 450.00,
+        price: 150.00, // Base price for 250g
         stock: 50,
         categoryId: heritagePickles.id,
-        images: ['https://images.unsplash.com/photo-1589135233689-ba3719001157?q=80&w=800'],
+        sizes: {
+          create: [
+            { weight: '250g', price: 150.00, stock: 20 },
+            { weight: '500g', price: 280.00, stock: 20 },
+            { weight: '1kg', price: 550.00, stock: 10 },
+          ]
+        }
       },
       {
         name: 'Gongura Pickle',
         slug: 'gongura-pickle',
         description: 'Tangy and spicy Roselle leaves pickle - a Telugu household staple.',
-        price: 380.00,
+        price: 120.00,
         stock: 30,
         categoryId: heritagePickles.id,
-        images: ['https://images.unsplash.com/photo-1589135233689-ba3719001157?q=80&w=800'],
+        sizes: {
+          create: [
+            { weight: '250g', price: 120.00, stock: 10 },
+            { weight: '500g', price: 230.00, stock: 15 },
+            { weight: '1kg', price: 450.00, stock: 5 },
+          ]
+        }
+      },
+      {
+        name: 'Tomato Pickle',
+        slug: 'tomato-pickle',
+        description: 'Traditional spicy tomato pickle with a hint of garlic.',
+        price: 100.00,
+        stock: 40,
+        categoryId: heritagePickles.id,
+        sizes: {
+          create: [
+            { weight: '250g', price: 100.00, stock: 15 },
+            { weight: '500g', price: 190.00, stock: 15 },
+            { weight: '1kg', price: 370.00, stock: 10 },
+          ]
+        }
       },
       {
         name: 'Kandi Podi',
         slug: 'kandi-podi',
         description: 'Roasted lentils powder - perfect with hot rice and ghee.',
-        price: 250.00,
+        price: 80.00,
         stock: 100,
         categoryId: authenticPodis.id,
-        images: ['https://images.unsplash.com/photo-1589135233689-ba3719001157?q=80&w=800'],
+        sizes: {
+          create: [
+            { weight: '250g', price: 80.00, stock: 40 },
+            { weight: '500g', price: 150.00, stock: 40 },
+            { weight: '1kg', price: 280.00, stock: 20 },
+          ]
+        }
       },
     ]
 
     for (const prod of products) {
       await prisma.product.upsert({
         where: { slug: prod.slug },
-        update: prod,
+        update: {
+          ...prod,
+          sizes: undefined // Don't update sizes via upsert like this
+        },
         create: prod,
       })
     }

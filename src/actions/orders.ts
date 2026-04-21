@@ -32,8 +32,12 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
     });
 
     // Send Status Update SMS
-    if (status === "CONFIRMED" || status === "DELIVERED" || status === "CANCELLED") {
-      const message = `Abba Emi Ruchi Andi: Your order #${orderId.slice(-6)} has been ${status.toLowerCase()}!`;
+    if (status === "PREPARING" || status === "DELIVERED" || status === "CANCELLED" || status === "SHIPPED") {
+      let statusText = status.toLowerCase();
+      if (status === "PREPARING") statusText = "is being prepared";
+      if (status === "SHIPPED") statusText = "has been shipped";
+      
+      const message = `Abba Emi Ruchi Andi: Your order #${orderId.slice(-6)} ${statusText}!`;
       try {
         await sendSMS(order.customerPhone, message);
       } catch (smsError) {
@@ -68,7 +72,8 @@ export async function createOrder(data: {
   customerName: string;
   customerPhone: string;
   customerEmail?: string;
-  items: { productId: string; quantity: number; price: number }[];
+  address: string;
+  items: { productId: string; quantity: number; price: number; weight: string }[];
   total: number;
   userId?: string;
 }) {
@@ -95,16 +100,24 @@ export async function createOrder(data: {
           update: {
             name: data.customerName,
             email: data.customerEmail,
+            address: data.address,
             userId: data.userId || undefined,
           },
           create: {
             name: data.customerName,
             phone: data.customerPhone,
             email: data.customerEmail,
+            address: data.address,
             userId: data.userId || undefined,
           },
         });
         customerId = customer.id;
+      } else {
+        // Update customer address if it changed or was empty
+        await tx.customer.update({
+          where: { id: customerId },
+          data: { address: data.address }
+        });
       }
 
       // 2. Create Order linked to the customer
@@ -113,6 +126,7 @@ export async function createOrder(data: {
           customerName: data.customerName,
           customerPhone: data.customerPhone,
           customerEmail: data.customerEmail,
+          address: data.address,
           total: data.total,
           customerId: customerId,
           items: {
@@ -120,6 +134,7 @@ export async function createOrder(data: {
               productId: item.productId,
               quantity: item.quantity,
               price: item.price,
+              weight: item.weight,
             })),
           },
         },
@@ -129,7 +144,7 @@ export async function createOrder(data: {
     });
 
     // Send Confirmation SMS
-    const message = `Abba Emi Ruchi Andi: Order received! Your Order ID is #${result.id.slice(-6)}. Amount: ₹${data.total}. We'll notify you when it's confirmed.`;
+    const message = `Abba Emi Ruchi Andi: Order received! Your Order ID is #${result.id.slice(-6)}. Amount: ₹${data.total}. COD will be collected at delivery.`;
     try {
       await sendSMS(data.customerPhone, message);
     } catch (smsError) {

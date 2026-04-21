@@ -31,15 +31,30 @@ export const sendOTPSMS = async (mobile: string, otp: string) => {
     return { success: true, message: "Key missing, logged to console" };
   }
 
-  const url = `https://www.fast2sms.com/dev/bulkV2?authorization=${apiKey}&route=otp&variables_values=${otp}&numbers=${mobile}`;
+  // Clean the phone number (remove +91, spaces, etc. to get exactly 10 digits)
+  const cleanMobile = mobile.replace(/\D/g, "").slice(-10);
+  const messageText = `Your OTP is ${otp}`;
+  const url = `https://www.fast2sms.com/dev/bulkV2?authorization=${apiKey}&route=transactional&message=${encodeURIComponent(messageText)}&language=english&flash=0&numbers=${cleanMobile}`;
 
   try {
     const response = await fetch(url);
     const data = await response.json();
-    console.log("✅ OTP SMS Sent:", data);
+    
+    if (data.return === false) {
+      console.warn("⚠️ Fast2SMS Error:", data.message);
+    } else {
+      console.log("✅ OTP SMS Sent successfully");
+    }
+    
+    // Always log the OTP to the console during development so you aren't stuck if the SMS is delayed/blocked
+    console.log("------------------------------------------");
+    console.log(`[AUTH] YOUR OTP FOR ${mobile} IS: ${otp}`);
+    console.log("------------------------------------------");
+    
     return data;
   } catch (error) {
     console.error("❌ SMS OTP Error:", error);
-    throw error;
+    console.log(`[DEVELOPMENT ONLY] Fallback OTP: ${otp}`);
+    return { return: false, message: "System failure" };
   }
 };

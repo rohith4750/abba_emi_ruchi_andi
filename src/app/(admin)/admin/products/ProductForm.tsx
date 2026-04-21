@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { createProduct, updateProduct } from "@/actions/products"
 import { ChevronLeft, Save, Plus, X, Package } from "lucide-react"
+import DynamicBackButton from "@/components/DynamicBackButton"
 import Link from "next/link"
 
 interface ProductFormProps {
@@ -110,13 +111,7 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
   return (
     <div className="max-w-5xl mx-auto pb-20">
       <div className="flex items-center justify-between mb-8">
-        <Link 
-          href="/admin/products"
-          className="flex items-center gap-2 text-gray-500 hover:text-brand-green transition-colors"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          <span className="font-medium">Back to Products</span>
-        </Link>
+        <DynamicBackButton />
         <h1 className="text-2xl font-bold text-gray-900">
           {initialData ? "Edit Product" : "Add New Product"}
         </h1>
