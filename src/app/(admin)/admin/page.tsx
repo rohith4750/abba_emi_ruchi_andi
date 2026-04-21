@@ -11,11 +11,14 @@ import {
   AlertCircle,
   Plus
 } from "lucide-react";
+} from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { getDashboardStats, getRecentOrders, getAnalyticsData } from "@/actions/dashboard";
 import RevenueChart from "./components/RevenueChart";
 import CategoryChart from "./components/CategoryChart";
+
+export const dynamic = 'force-dynamic'
 
 export default async function AdminDashboard() {
   const { stats, error: statsError } = await getDashboardStats();

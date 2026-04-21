@@ -10,7 +10,16 @@ if (!connectionString) {
 
 const prismaClientSingleton = () => {
   try {
-    if (!connectionString) return new PrismaClient();
+    // If no connection string is provided (e.g. during Vercel build time), 
+    // we return a proxy/mock or let it fail more gracefully without crashing the build
+    if (!connectionString) {
+      console.warn("⚠️ Providing dummy database URL for build-time compatibility.");
+      return new PrismaClient({
+        datasources: {
+          db: { url: "postgresql://postgres:password@localhost:5432/placeholder" }
+        }
+      });
+    }
     
     const pool = new pg.Pool({ 
       connectionString,

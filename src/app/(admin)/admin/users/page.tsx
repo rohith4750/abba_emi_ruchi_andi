@@ -3,6 +3,8 @@ import UserList from "./components/UserList"
 import DynamicBackButton from "@/components/DynamicBackButton"
 import { ShieldCheck, UserPlus, ShieldAlert } from "lucide-react"
 
+export const dynamic = 'force-dynamic'
+
 export default async function UsersPage() {
   const { users, error } = await getStaffUsers()
 

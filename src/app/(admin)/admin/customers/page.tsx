@@ -2,6 +2,8 @@ import { getCustomers } from "@/actions/customers"
 import CustomerList from "./CustomerList"
 import DynamicBackButton from "@/components/DynamicBackButton"
 
+export const dynamic = 'force-dynamic'
+
 export default async function CustomersPage() {
   const { customers, error } = await getCustomers()
   
